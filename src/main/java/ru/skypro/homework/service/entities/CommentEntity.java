@@ -3,6 +3,7 @@ package ru.skypro.homework.service.entities;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.*;
 import java.time.Instant;
@@ -25,7 +26,7 @@ public class CommentEntity {
     String text;
 
     @Column(name = "created_at", nullable = false)
-    Long createdAt;
+    LocalDateTime createdAt;
 
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
@@ -34,5 +35,4 @@ public class CommentEntity {
     @ManyToOne
     @JoinColumn(name = "ad_id", referencedColumnName = "pk")
     AdEntity adEntity;
-
 }

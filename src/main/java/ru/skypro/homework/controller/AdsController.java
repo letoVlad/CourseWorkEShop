@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.*;
+import ru.skypro.homework.service.AdService;
 
 import javax.xml.crypto.OctetStreamData;
 
@@ -21,6 +22,7 @@ import javax.xml.crypto.OctetStreamData;
 @RestController
 @RequestMapping("/ads")
 public class AdsController {
+        private final AdService adService;
 
         @Operation(summary = "Получение всех объявлений")
         @ApiResponses(value = {
@@ -28,7 +30,7 @@ public class AdsController {
         })
         @GetMapping
         public ResponseEntity<AdsDTO> getAds(){
-            return ResponseEntity.ok(new AdsDTO());
+            return ResponseEntity.ok().body(adService.getAllAds());
         }
 
         @Operation(summary = "Добавление объявления")
@@ -39,8 +41,8 @@ public class AdsController {
                 @ApiResponse(responseCode = "401", description = "Unauthorized")}
         )
         @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-        public ResponseEntity<AdDTO> addAd(@RequestParam("properties") AdDTO ad, @RequestPart MultipartFile image) {
-                return ResponseEntity.ok(ad);
+        public ResponseEntity<AdDTO> addAd(@RequestPart("properties") CreateOrUpdateAdDTO ad, @RequestParam("image") MultipartFile image) {
+                return ResponseEntity.ok(adService.addAd(ad,image));
         }
 
         @Operation(summary = "Получение информации об объявлении")
@@ -51,7 +53,7 @@ public class AdsController {
         })
         @GetMapping("/{id}")
         public ResponseEntity<ExtendedAdDTO> getInfoByAd(@PathVariable int id){
-                return ResponseEntity.ok(new ExtendedAdDTO());
+                return ResponseEntity.ok(adService.getInfoByAd(id));
         }
 
         @Operation(summary = "Удаление объявления")
@@ -63,6 +65,7 @@ public class AdsController {
         })
         @DeleteMapping("/{id}")
         public ResponseEntity deleteUser(@PathVariable int id) {
+                adService.deleteUser(id);
                 return ResponseEntity.ok().build();
         }
 
@@ -76,7 +79,7 @@ public class AdsController {
         })
         @PatchMapping("/{id}")
         public ResponseEntity<AdDTO> updateInfoByAd(@PathVariable int id, @RequestBody CreateOrUpdateAdDTO ad){
-                return ResponseEntity.ok(new AdDTO());
+                return ResponseEntity.ok(adService.updateInfoByAd(id,ad));
         }
 
         @Operation(summary = "Получение информации об объявлении")

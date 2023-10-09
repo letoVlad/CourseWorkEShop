@@ -37,7 +37,7 @@ public class UserEntity {
     @Column(name = "image", nullable = false)
     String image;
 
-    @Column(name = "username", nullable = false)
+    @Column(name = "username", nullable = false, unique = true)
     String username;
 
     @Column(name = "password", nullable = false)
@@ -47,7 +47,7 @@ public class UserEntity {
     @Enumerated(EnumType.STRING)
     Role role;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<CommentEntity> comments = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)

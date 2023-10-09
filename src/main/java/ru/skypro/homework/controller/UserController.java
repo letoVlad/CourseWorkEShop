@@ -14,6 +14,8 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.NewPasswordDTO;
 import ru.skypro.homework.dto.UpdateUserDTO;
 import ru.skypro.homework.dto.UserDTO;
+import ru.skypro.homework.service.AuthService;
+import ru.skypro.homework.service.UserService;
 import ru.skypro.homework.service.impl.UserServiceImpl;
 import ru.skypro.homework.service.entities.UserEntity;
 import ru.skypro.homework.service.repositories.UserRepository;
@@ -28,7 +30,7 @@ import java.util.Optional;
 @RequestMapping("/users")
 public class UserController {
 
-    UserServiceImpl userService;
+    UserService userService;
 
     UserRepository userRepository;
 
@@ -49,15 +51,9 @@ public class UserController {
             @ApiResponse(responseCode = "401", description = "Unauthorized")
     })
     @GetMapping("/me")
-    public ResponseEntity<UserDTO> getUser(@RequestBody UserDTO user) {
+    public ResponseEntity<UserDTO> getUser() {
 
-        Optional<UserEntity> byId = userRepository.findById(1);
-        UserEntity userTest = byId.orElse(null);
-
-        UserDTO userDTO = userService.getUser(userTest);
-        log.info("User updated successfully");
-
-        return ResponseEntity.ok().body(userDTO);
+        return ResponseEntity.ok().body(null);
     }
 
     @Operation(summary = "Обновление информации об авторизованном пользователе")
