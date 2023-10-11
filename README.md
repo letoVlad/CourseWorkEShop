@@ -21,12 +21,13 @@ Spring Boot (Java) приложение, реализующее REST API для 
 - Stream API
 - Lombok
 - Hibernate
-  ##### Test:
-  - Junit
-  - Mockito
+##### Test:
+- Junit
+- Mockito
 
-  ##### SQL:
-  - PostgreSQL
+##### SQL:
+- PostgreSQL
+
 
 ##### Frontend:
 - Docker image
