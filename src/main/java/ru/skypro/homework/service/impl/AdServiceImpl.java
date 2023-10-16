@@ -11,10 +11,8 @@ import ru.skypro.homework.mappers.AdMapper;
 import ru.skypro.homework.service.AdService;
 import ru.skypro.homework.service.entities.AdEntity;
 import ru.skypro.homework.service.repositories.AdRepository;
-
-import javax.imageio.stream.ImageInputStreamImpl;
+import ru.skypro.homework.service.repositories.CommentRepository;
 import javax.xml.crypto.OctetStreamData;
-import java.io.OutputStream;
 import java.util.List;
 
 @AllArgsConstructor
@@ -22,6 +20,7 @@ import java.util.List;
 public class AdServiceImpl implements AdService {
     private final AdMapper adMapper;
     private final AdRepository adRepository;
+    private final CommentRepository commentRepository;
 
     @Override
     public AdsDTO getAllAds() {
@@ -39,8 +38,7 @@ public class AdServiceImpl implements AdService {
 /*
         image.getInputStream().
 */
-        adEntity.setImage("photo");
-        adEntity.setPhone("+7321736144");
+        adEntity.setImage(null);
         adRepository.save(adEntity);
         return adMapper.toAdDto(adEntity);
     }
@@ -51,7 +49,8 @@ public class AdServiceImpl implements AdService {
     }
 
     @Override
-    public void deleteUser(int id) {
+    public void deleteAd(int id) {
+        commentRepository.deleteAllByAdEntity(adRepository.findById(id).get());
         adRepository.deleteById(id);
     }
 
@@ -66,9 +65,8 @@ public class AdServiceImpl implements AdService {
     }
 
     @Override
-    public AdsDTO getAdsByAuthUser() {
-        //
-        return null;
+    public AdsDTO getAdsByAuthUser(String email) {
+        return adMapper.toAdsDto(adRepository.findByEmail(email));
     }
 
     @Override
