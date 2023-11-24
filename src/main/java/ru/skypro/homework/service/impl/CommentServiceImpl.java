@@ -29,40 +29,30 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public CommentsDTO receivingAdComments(int adId) {
         AdEntity adEntity = checkForAd(adId);
-
         List<CommentEntity> commentEntityList = adEntity.getCommentEntityList();
-
         List<CommentDTO> commentDTOList = commentMapper.toCommentDTOList(commentEntityList);
-
         return new CommentsDTO(commentEntityList.size(), commentDTOList);
     }
 
     @Override
     public void deleteComment(int adId, int commentId) {
         CommentEntity commentEntity = checkForAdAndComment(adId, commentId);
-
         commentRepository.delete(commentEntity);
     }
 
     @Override
     public CommentDTO addComment(int adId, CreateOrUpdateCommentDTO text) {
         AdEntity adEntity = checkForAd(adId);
-
         CommentEntity newCommentEntity = commentMapper.createCommentEntity(text, adEntity);
-
         commentRepository.saveAndFlush(newCommentEntity);
-
         return commentMapper.toCommentDto(newCommentEntity);
     }
 
     @Override
     public CommentDTO updateComment(int adId, int commentId, CreateOrUpdateCommentDTO text) {
         CommentEntity commentEntityToUpdate = checkForAdAndComment(adId, commentId);
-
         commentEntityToUpdate.setText(text.getText());
-
         commentRepository.saveAndFlush(commentEntityToUpdate);
-
         return commentMapper.toCommentDto(commentEntityToUpdate);
     }
 

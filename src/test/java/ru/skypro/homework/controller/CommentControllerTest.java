@@ -1,6 +1,6 @@
 package ru.skypro.homework.controller;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -10,13 +10,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import ru.skypro.homework.dto.CommentDTO;
 import ru.skypro.homework.dto.CommentsDTO;
+import ru.skypro.homework.dto.CreateOrUpdateCommentDTO;
+import ru.skypro.homework.mappers.CommentMapper;
 import ru.skypro.homework.service.CommentService;
+import ru.skypro.homework.service.entities.AdEntity;
+import ru.skypro.homework.service.entities.CommentEntity;
+import ru.skypro.homework.service.repositories.CommentRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CommentControllerTest {
@@ -24,33 +29,37 @@ class CommentControllerTest {
     @Mock
     CommentService commentService;
 
+    @Mock
+    private CommentMapper commentMapper;
+
+    @Mock
+    private CommentRepository commentRepository;
+
+
     @InjectMocks
     CommentController controller;
 
-    //название тестируемого метода_блок проверяемого метода_ожидаемое поведение метода
-    @Test
-    void receivingAdComments() {
-        //given
-        CommentDTO commentDTO = new CommentDTO();
+    private CommentDTO commentDTO;
+
+    @BeforeEach
+    void setUp() {
+        commentDTO = new CommentDTO();
         commentDTO.setAuthor(1);
         commentDTO.setAuthorImage("TestImage");
         commentDTO.setAuthorFirstName("TestFirstName");
         commentDTO.setCreatedAt(123L);
         commentDTO.setPk(12);
         commentDTO.setText("TestText");
+    }
 
+    @Test
+    void receivingAdComments() {
+        //given
         CommentsDTO commentsDTO = new CommentsDTO(1, java.util.List.of(commentDTO));
-        System.out.println(commentsDTO);
 
-        //должен быть возвращен / когда commentService
-//        doReturn(commentsDTO).when(commentService.receivingAdComments(1));
-        when(commentService.receivingAdComments(1)).thenReturn(commentsDTO);
-
-
-
-        //вызов тестируемого метода
         //when
-        var responseEntity = this.controller.receivingAdComments(1);;
+        when(commentService.receivingAdComments(1)).thenReturn(commentsDTO);
+        var responseEntity = this.controller.receivingAdComments(1);
 
         //then
         assertNotNull(responseEntity);
@@ -60,6 +69,34 @@ class CommentControllerTest {
 
     @Test
     void addComment() {
+        int adId = 1;
+        CreateOrUpdateCommentDTO text = new CreateOrUpdateCommentDTO();
+        text.setText("TestText");
+
+        AdEntity adEntity = new AdEntity();
+        CommentEntity newCommentEntity = new CommentEntity();
+        CommentDTO expectedCommentDTO = new CommentDTO();
+        expectedCommentDTO.setText("TestText"); // Установка ожидаемого текста
+
+//        // mock-логика
+
+        when(commentMapper.createCommentEntity(text, adEntity)).thenReturn(newCommentEntity);
+        when(commentRepository.saveAndFlush(newCommentEntity)).thenReturn(newCommentEntity);
+        when(commentMapper.toCommentDto(newCommentEntity)).thenReturn(expectedCommentDTO);
+
+
+        // when
+        CommentDTO resultCommentDTO = commentService.addComment(adId, text);
+
+
+        // Проверяем, что текст в CommentDTO совпадает с ожидаемым текстом
+        assertEquals(expectedCommentDTO.getText(), resultCommentDTO.getText());
+
+        // проверка вызовов методов
+
+        verify(commentMapper, times(1)).createCommentEntity(text, adEntity);
+        verify(commentRepository, times(1)).saveAndFlush(newCommentEntity);
+        verify(commentMapper, times(1)).toCommentDto(newCommentEntity);
     }
 
     @Test
